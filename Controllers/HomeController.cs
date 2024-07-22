@@ -13,6 +13,7 @@ namespace WebMVC2.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
@@ -23,10 +24,32 @@ namespace WebMVC2.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        [Route("/Home/Index")]
+        public IActionResult Index(UserInfo model)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (ModelState.IsValid)
+            {
+                // 表單數據通過驗證
+                // 執行相應的操作，例如保存到數據庫
+                return Ok("Success");
+            }
+            else
+            {
+                // 表單數據未通過驗證
+                // 返回帶有錯誤信息的視圖，讓用戶重新填寫表單
+                return View(model);
+            }
+        }
+
+        // 可用於對資料庫進行驗證用戶名
+        public IActionResult CheckUserID(string UserID)
+        {
+            if (UserID == "123")
+            {
+                return Json("帳號已經被註冊");
+            }
+            return Json(true);
         }
     }
 }
