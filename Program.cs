@@ -1,7 +1,12 @@
+using WebMVC2.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+//builder.Services.AddSingleton<Account>();
+//builder.Services.AddSingleton<IAccount, AccountInfo>();
 
 var app = builder.Build();
 

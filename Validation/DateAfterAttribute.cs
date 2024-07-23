@@ -11,8 +11,13 @@ namespace WebMVC2.Validation
             start = DateTime.ParseExact(dateString, format, null);
         }
 
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
         {
+            if (value == null)
+            {
+                return false;
+            }
+
             var date = (DateTime)value;
 
             if (date.Ticks > start.Ticks)

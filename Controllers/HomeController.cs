@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 using WebMVC2.Models;
 
 namespace WebMVC2.Controllers
@@ -13,9 +12,9 @@ namespace WebMVC2.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
         public IActionResult Index()
         {
+            
             return View();
         }
 
@@ -38,7 +37,7 @@ namespace WebMVC2.Controllers
             {
                 // 表單數據未通過驗證
                 // 返回帶有錯誤信息的視圖，讓用戶重新填寫表單
-                return View(model);
+                return View();
             }
         }
 

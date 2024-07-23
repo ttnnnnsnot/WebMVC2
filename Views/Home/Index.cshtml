@@ -8,7 +8,7 @@
     <div asp-validation-summary="All" class="text-danger"></div>
 
     <div class="form-group">
-        <label for="username">帳號</label>
+        <label for="username">帳號(可輸入123判斷已存在的資料)</label>
         <input type="text" class="form-control" asp-for="UserID">
         <span asp-validation-for="UserID" class="text-danger"></span>
     </div>
@@ -33,7 +33,7 @@
 
     <div class="form-group">
         <label for="birthday">生日</label>
-        <input type="date" class="form-control" asp-for="Birthday" value="2020-01-01">
+        <input type="date" class="form-control" asp-for="Birthday" value="2019-01-01">
         <span asp-validation-for="Birthday" class="text-danger"></span>
     </div>
 
