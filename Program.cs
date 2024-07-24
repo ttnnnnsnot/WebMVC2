@@ -1,9 +1,29 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using WebMVC2.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// 設定session
+builder.Services.AddRazorPages().AddSessionStateTempDataProvider();
+builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
+builder.Services.AddSession();
+
+
+// 設置cookies登入驗証
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromDays(1);
+        options.SlidingExpiration = true;
+        options.AccessDeniedPath = "/Login/AccessDenied";
+        options.LoginPath = "/Login/Index";             
+    });
+
+
 
 //builder.Services.AddSingleton<Account>();
 //builder.Services.AddSingleton<IAccount, AccountInfo>();
@@ -23,6 +43,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// 設置session
+app.UseSession();
+
+// 設置cookies登入驗証
+app.UseCookiePolicy();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

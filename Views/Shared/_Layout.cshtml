@@ -25,14 +25,26 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">表單驗証</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index">資料列表</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index">資料列表1</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index2">資料列表2</a>
                         </li>
                     </ul>
 
                     <ul class="nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Login" asp-action="LogOut">LogOut</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Login" asp-action="Index">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -49,9 +61,21 @@
             &copy; 2024 - WebMVC2 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        $(document).ready(function () {
+            // 獲取錯誤訊息
+            if (errorMessage) {
+                $('#MessageContext').html(errorMessage);
+                $('#exampleModal').modal('show');
+            }
+        });
+    </script>
+    
 </body>
 </html>

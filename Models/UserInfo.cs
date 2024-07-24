@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.ComponentModel.DataAnnotations;
 using WebMVC2.Validation;
 
@@ -9,7 +8,7 @@ namespace WebMVC2.Models
     {
         [Remote(action:"CheckUserID", controller: "Home")]
         [Required(ErrorMessage = "帳號是必填的")]
-        [RegularExpression("^[0-9]*$", ErrorMessage = "帳號只能包含數字")]
+        [RegularExpression("^[A-Za-z0-9_@]+$", ErrorMessage = "帳號只能包含英文數字")]
         public string UserID { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "密碼是必填的")]

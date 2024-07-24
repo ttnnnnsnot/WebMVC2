@@ -1,4 +1,9 @@
 ﻿@using WebMVC2
 @using WebMVC2.Models
+
+@*驗証機制*@
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
