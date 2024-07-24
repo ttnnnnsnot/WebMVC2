@@ -58,7 +58,7 @@ namespace WebMVC2.Controllers
                 AllowRefresh = true,
                 // Refreshing the authentication session should be allowed.
 
-                ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(10),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
                 // The time at which the authentication ticket expires. A 
                 // value set here overrides the ExpireTimeSpan option of 
                 // CookieAuthenticationOptions set with AddCookie.
