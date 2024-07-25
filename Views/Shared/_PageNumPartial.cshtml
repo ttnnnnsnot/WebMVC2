@@ -1,0 +1,28 @@
+﻿@model PageNum
+@{
+    @Model.UrlActionName
+    if (@Model.TotalRecords > 0)
+    {
+        int startPage = Math.Max(1, @Model.CurrentPage - @Model.PageNumSize / 2);
+        int endPage = Math.Min(@Model.TotalPages, startPage + @Model.PageNumSize - 1);
+
+        <nav aria-label="Page navigation" class="mt-5">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(@Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action(Model.UrlActionName, Model.UrlControllerName, new { id = 1 })@Model.UrlParam" tabindex="-1">Previous</a>
+                </li>
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    var url = i == @Model.CurrentPage ? null : Url.Action(Model.UrlActionName, Model.UrlControllerName, new { id = i }) + @Model.UrlParam;
+
+                    <li class="page-item @(i == @Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="@url">@i</a>
+                    </li>
+                }
+                <li class="page-item  @(@Model.CurrentPage == @Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action(Model.UrlActionName, Model.UrlControllerName, new { id = @Model.TotalPages })@Model.UrlParam">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
+}

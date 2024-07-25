@@ -1,10 +1,14 @@
-﻿namespace WebMVC2.Models
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace WebMVC2.Models
 {
     public class ResultData
     {
         public ResultMessage resultMessage { get; set; } = new ResultMessage();
 
-        public List<List<Dictionary<string, object>>> Data { get; set; } = new List<List<Dictionary<string, object>>>();
+        [JsonPropertyName("data")]
+        public List<JsonElement> Data { get; set; } = new List<JsonElement>();
     }
 
     public class ResultMessage

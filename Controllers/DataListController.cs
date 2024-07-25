@@ -1,35 +1,31 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WebMVC2.Models;
-using WebMVC2.Services;
+using WebMVC2.Interface;
 
 namespace WebMVC2.Controllers
 {
     public class DataListController : Controller
     {
-        private readonly ApiService _apiService;
+        private readonly IProductService _productService;
 
-        public DataListController(ApiService apiService)
+        public DataListController(IProductService productService)
         {
-            _apiService = apiService;
+            _productService = productService;
         }
 
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Index(int? id, int productTypeId = 0)
         {
-            ResponseData data = new ResponseData()
-            {
-                ProcedureName = "ProductList",
-                Parameters = new Dictionary<string, string>()
-                {
-                    { "ProductTypeID", "0" },
-                    { "PageNum", "1" },
-                }
-            };
+            int currentPage = id ?? 1;
+            int itemSize = 12;
 
-            ResultData resultData = await _apiService.CallApi(data);
+            var (products, pageInfo) = await _productService.GetProductsAsync(productTypeId, currentPage, itemSize);
 
-            return View(resultData);
+            ViewData["Products"] = products;
+            ViewData["PageNums"] = pageInfo;
+            ViewData["productTypeId"] = productTypeId.ToString();
+
+            return View();
         }
 
         [Authorize(Roles = "Admin2")]

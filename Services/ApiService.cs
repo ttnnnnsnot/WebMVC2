@@ -1,13 +1,13 @@
-﻿using WebMVC2.Models;
-using System.Text.Json;
+﻿using WebMVC2.Interface;
+using WebMVC2.Models;
 
 namespace WebMVC2.Services
 {
-    public class ApiService
+    public class ApiService : IApiService
     {
-        private readonly ApiServiceHttpClient _httpClient;
+        private readonly IApiServiceHttpClient _httpClient;
 
-        public ApiService(ApiServiceHttpClient httpClient)
+        public ApiService(IApiServiceHttpClient httpClient)
         {
             _httpClient = httpClient;
         }
@@ -17,8 +17,7 @@ namespace WebMVC2.Services
             var result = new ResultData();
             try
             {
-                var resultData = JsonSerializer.Deserialize<ResultData>(apiResponse,
-                    GlobalJsonSerializerOptions.Default);
+                var resultData = JsonSerializerService.Deserialize<ResultData>(apiResponse);
                 
                 if (resultData != null)
                 {
@@ -40,7 +39,7 @@ namespace WebMVC2.Services
         {
             try
             {
-                var jsonData = JsonSerializer.Serialize(responseData);
+                var jsonData = JsonSerializerService.Serialize(responseData);
                 HttpResponseMessage response = await _httpClient.SendPostRequest(AppSettings.ApiUrl, jsonData);
 
                 if (response.IsSuccessStatusCode)

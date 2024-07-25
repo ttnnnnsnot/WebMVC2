@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using WebMVC2.Interface;
 using WebMVC2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Add HttpClient
-builder.Services.AddHttpClient<ApiServiceHttpClient>();
+builder.Services.AddHttpClient();
 
 // ³]©w Configuration
 AppSettings.Configuration = builder.Configuration;
@@ -27,10 +28,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Login/Index";
     });
 
-
-builder.Services.AddScoped<ApiService>();
-//builder.Services.AddSingleton<Account>();
-//builder.Services.AddSingleton<IAccount, AccountInfo>();
+builder.Services.AddScoped<IApiServiceHttpClient, ApiServiceHttpClient>();
+builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 

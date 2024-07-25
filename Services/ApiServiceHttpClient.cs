@@ -1,20 +1,21 @@
 ﻿using System.Text;
+using WebMVC2.Interface;
 
 namespace WebMVC2.Services
 {
-    public class ApiServiceHttpClient
+    public class ApiServiceHttpClient : IApiServiceHttpClient
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public ApiServiceHttpClient(HttpClient httpClient)
+        public ApiServiceHttpClient(IHttpClientFactory clientFactory)
         {
-            _httpClient = httpClient;
+            _clientFactory = clientFactory;
         }
 
         public async Task<HttpResponseMessage> SendPostRequest(string apiUrl, string jsonData)
         {
             var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            return await _httpClient.PostAsync(apiUrl, content);
+            return await _clientFactory.CreateClient().PostAsync(apiUrl, content);
         }
     }
 }

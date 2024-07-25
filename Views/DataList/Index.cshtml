@@ -1,3 +1,115 @@
-﻿@model ResultData
+﻿@{
+    var productItems = (ViewData["Products"] as IEnumerable<ProductItem> ?? new List<ProductItem>());
+    var pageNum = (ViewData["PageNums"] as PageNum ?? new PageNum());
 
-<h3>@Model.resultMessage.Msg</h3>
+    var Url0 = @Url.Action(pageNum.UrlActionName, pageNum.UrlControllerName, new { id = pageNum.CurrentPage, productTypeId = 0 });
+    var Url1 = @Url.Action(pageNum.UrlActionName, pageNum.UrlControllerName, new { id = pageNum.CurrentPage, productTypeId = 1 });
+    var Url2 = @Url.Action(pageNum.UrlActionName, pageNum.UrlControllerName, new { id = pageNum.CurrentPage, productTypeId = 2 });
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 左側選單（大螢幕） -->
+        <div class="col-md-3 col-lg-2 d-none d-md-block sidebar h-100" id="left-menu-id">
+            <div class="list-group">
+                <a href="@Url0" data-producttypeid="0" class="list-group-item list-group-item-action" aria-current="true">
+                    全部
+                </a>
+                <a href="@Url1" data-producttypeid="1" class="list-group-item list-group-item-action">類別1</a>
+                <a href="@Url2" data-producttypeid="2" class="list-group-item list-group-item-action">類別2</a>
+            </div>
+        </div>
+
+        <!-- 主要內容區 -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <!-- 下拉選單（小螢幕） -->
+            <div class="dropdown d-md-none mb-3">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                <ul class="dropdown-menu" id="dropdown-menu-id" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" data-producttypeid="0" href="@Url0" aria-current="true">全部</a></li>
+                    <li><a class="dropdown-item" data-producttypeid="1" href="@Url1" aria-current="true">類別1</a></li>
+                    <li><a class="dropdown-item" data-producttypeid="2" href="@Url2" aria-current="true">類別2</a></li>
+                </ul>
+            </div>
+
+            <!-- Banner -->
+            <div class="banner mb-4 bg-light d-none d-md-block " style="height: 200px">
+                <img src="https://placehold.it/1200x400" class="img-fluid w-100 h-100 object-fit-cover" alt="Banner">
+            </div>
+
+            <!-- 商品列表 -->
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <!-- 商品項目 1 -->
+                @foreach (ProductItem item in productItems)
+                {
+                    <div class="col">
+                        <div class="card h-100">
+                            <img src="https://placehold.it/150x150" class="card-img-top" alt="商品圖片">
+                            <div class="card-body">
+                                <h5 class="card-title">@item.Name</h5>
+                                <p class="card-text">@item.Description</p>
+                                <p class="card-text"><strong>價格: @item.Price.ToString("C0")</strong></p>
+                                <div class="d-flex justify-content-end">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">查看詳細</button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary">加入購物車</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @await Html.PartialAsync("_PageNumPartial", pageNum)
+        </main>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var productTypeId = '@ViewData["productTypeId"]';
+        $('#dropdown-menu-id a').click(function () {
+            var Id = $(this).data('producttypeid');
+            var _left_this = GetMenuthis('#left-menu-id a', 'producttypeid', Id);
+
+            changeDropdownMenuText($(this).text());
+            changeLeftMenuActive(_left_this);
+        });
+
+        $('#left-menu-id a').click(function () {
+            var Id = $(this).data('producttypeid');
+            var _dropdown_this = GetMenuthis('#dropdown-menu-id a', 'producttypeid', Id);
+
+            changeDropdownMenuText(_dropdown_this.text());
+            changeLeftMenuActive($(this));
+        });
+
+        function ChangeProductTypeId(Id) {
+            var _left_this = GetMenuthis('#left-menu-id a', 'producttypeid', Id);
+            var _dropdown_this = GetMenuthis('#dropdown-menu-id a', 'producttypeid', Id);
+
+            changeDropdownMenuText(_dropdown_this.text());
+            changeLeftMenuActive(_left_this);
+        }
+
+        function GetMenuthis(selector, dataName, Id) {
+            return $(selector).filter(function () {
+                return $(this).data(dataName) == Id;
+            });
+        }
+
+        function changeDropdownMenuText(text) {
+            $('#dropdownMenuButton').text(text);
+        }
+
+        function changeLeftMenuActive(_this) {
+            $('#left-menu-id a').removeClass('active');
+            _this.addClass('active');
+        }
+
+        $(document).ready(function () {
+            ChangeProductTypeId(productTypeId);
+        });
+    </script>
+}
