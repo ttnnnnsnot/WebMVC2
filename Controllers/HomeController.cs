@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using WebMVC2.Interface;
 using WebMVC2.Models;
 
 namespace WebMVC2.Controllers
@@ -6,10 +7,12 @@ namespace WebMVC2.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUserService _userService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IUserService userService)
         {
             _logger = logger;
+            _userService = userService;
         }
 
         public IActionResult Index()
@@ -24,26 +27,26 @@ namespace WebMVC2.Controllers
 
         [HttpPost]
         [Route("/Home/Index")]
-        public IActionResult Index(UserInfo model)
+        public async Task<IActionResult> Index(UserInfo userInfo)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                // 表單數據通過驗證
-                // 執行相應的操作，例如保存到數據庫
-                return Ok("Success");
-            }
-            else
-            {
-                // 表單數據未通過驗證
-                // 返回帶有錯誤信息的視圖，讓用戶重新填寫表單
+                Console.WriteLine("123213");
+                TempData["CloseLoading"] = true;
                 return View();
             }
+
+            ResultMessage result = await _userService.GetUserAddAsync(userInfo);
+
+            TempData["ErrorMessage"] = result.MsgText;
+            return View();
         }
 
         // 可用於對資料庫進行驗證用戶名
-        public IActionResult CheckUserID(string UserID)
+        public async Task<IActionResult> CheckUserID(string UserID)
         {
-            if (UserID == "123")
+            var result = await _userService.GetUserAsync(UserID);
+            if (result.Msg)
             {
                 return Json("帳號已經被註冊");
             }

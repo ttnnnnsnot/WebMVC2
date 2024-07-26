@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.Features;
 using WebMVC2.Interface;
 using WebMVC2.Services;
 
@@ -12,6 +13,15 @@ builder.Services.AddHttpClient();
 
 // 設定 Configuration
 AppSettings.Configuration = builder.Configuration;
+
+// 設定 MultipartBodyLengthLimit
+builder.Services.Configure<FormOptions>(options =>
+{
+    // 單一次表單資料使用的預設是128MB，在此設定1MB
+    options.MultipartBodyLengthLimit = 1024 * 1024 * 10;
+    // 表單資料暫存到記憶體前的閾值，超過此大小就會使用暫存檔案
+    options.MemoryBufferThreshold = 1024 * 1024 * 1;
+});
 
 // 設定session
 builder.Services.AddRazorPages().AddSessionStateTempDataProvider();
@@ -31,6 +41,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddScoped<IApiServiceHttpClient, ApiServiceHttpClient>();
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

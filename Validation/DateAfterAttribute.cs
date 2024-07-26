@@ -39,7 +39,7 @@ namespace WebMVC2.Validation
 
             //方式二
             context.Attributes["data-val"] = "true";
-            context.Attributes["data-val-dateafter"] = "自訂驗證需在2020-01-01之前";
+            context.Attributes["data-val-dateafter"] = ErrorMessage ?? "請選擇正確的日期";
         }
 
         private bool MergeAttribute(IDictionary<string, string> attributes, string key, string value)

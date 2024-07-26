@@ -12,5 +12,9 @@
             Configuration["Logging:LogLevel:Default"] ?? "Information";
         public static string MicrosoftAspNetCoreLogLevel => 
             Configuration["Logging:LogLevel:Microsoft.AspNetCore"] ?? "Warning";
+        public static int FileSizeLimit => 
+            Convert.ToInt32(Configuration["FileSizeLimit"]);
+        public static string FileUserUrl => Configuration["FileUserUrl"] ?? "wwwroot/userfiles";
+
     }
 }

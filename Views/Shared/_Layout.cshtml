@@ -59,6 +59,7 @@
         </div>
     </footer>
 
+    <partial name="~/Views/Shared/_AlertPartial.cshtml" />
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -67,12 +68,21 @@
     <script>
         $(document).ready(function () {
             var errorMessage = '@TempData["ErrorMessage"]';
+            var closeLoading = '@TempData["CloseLoading"]';
             // 獲取錯誤訊息
-            if (errorMessage) {
+            if (errorMessage) {                
                 $('#MessageContext').html(errorMessage);
                 $('#exampleModal').modal('show');
             }
         });
+
+        function OpenLoading() {
+            $('#loadingModal').modal('show');
+        }
+
+        function CloseLoading() {
+            $('#loadingModal').modal('hide');
+        }
     </script>
     
 </body>

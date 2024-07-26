@@ -1,52 +1,64 @@
 ﻿@model UserInfo
 
-<h3>運用JQuery Validation</h3>
+<div><h3>運用JQuery Validation</h3></div>
 
 
-    <form method="post" asp-action="Index" id="yourFormId">
+    <form method="post" asp-action="Index" id="yourFormId" enctype="multipart/form-data">
 
     <div asp-validation-summary="All" class="text-danger"></div>
 
-    <div class="form-group">
-        <label for="username">帳號(可輸入123判斷已存在的資料)</label>
-        <input type="text" class="form-control" asp-for="UserID">
-        <span asp-validation-for="UserID" class="text-danger"></span>
+    <div class="row row-cols-1 gy-2">
+        <div class="col">
+            <label for="username">帳號(可輸入123判斷已存在的資料)</label>
+            <input type="text" class="form-control" asp-for="UserID">
+            <span asp-validation-for="UserID" class="text-danger"></span>
+        </div>
+
+        <div class="col">
+            <label for="password">密碼</label>
+            <input type="password" class="form-control" asp-for="Password">
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="col">
+            <label for="confirmPassword">確認密碼</label>
+            <input type="password" class="form-control" asp-for="ConfirmPassword">
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+
+        <div class="col">
+            <label for="email">EMAIL</label>
+            <input type="email" class="form-control" asp-for="Email">
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="col">
+            <label for="birthday">生日</label>
+            <input type="date" class="form-control" asp-for="Birthday" value="2021-01-01">
+            <span asp-validation-for="Birthday" class="text-danger"></span>
+        </div>
+
+        <div class="col">
+            <label for="address">地址</label>
+            <input type="text" class="form-control" asp-for="Address">
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="col mt-4">
+            <label for="files">上傳檔案(可選多個檔案)</label>
+            <div class="input-group">
+                <input type="file" asp-for="Files" class="form-control" name="Files" multiple>
+                <label class="input-group-text" for="Files">Upload</label>
+            </div>
+            <span asp-validation-for="Files" class="text-danger"></span>
+        </div>
+
+        <div class="col mt-3">
+            <button type="submit" class="btn btn-primary">提交</button>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="password">密碼</label>
-        <input type="password" class="form-control" asp-for="Password">
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label for="confirmPassword">確認密碼</label>
-        <input type="password" class="form-control" asp-for="ConfirmPassword">
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label for="email">EMAIL</label>
-        <input type="email" class="form-control" asp-for="Email">
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label for="birthday">生日</label>
-        <input type="date" class="form-control" asp-for="Birthday" value="2019-01-01">
-        <span asp-validation-for="Birthday" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label for="address">地址</label>
-        <input type="text" class="form-control" asp-for="Address">
-        <span asp-validation-for="Address" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-3">提交</button>
     </form>
-
-<partial name="~/Views/Shared/_AlertPartial.cshtml" />
 
 @section Scripts {
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
@@ -54,7 +66,61 @@
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 
     <script>
+        var fileSize = "@AppSettings.FileSizeLimit";
+        $.validator.unobtrusive.options = {
+            invalidHandler: function (event, validator) {
+                // 在整個表單驗證失敗時觸發其他動作
+                console.log(event, validator);
+            }
+        };
+
+        $(document).ready(function () {
+            // 監控表單的提交事件
+            console.log("jQuery Version: " + $.fn.jquery);
+            console.log("jQuery Validation Loaded: " + (typeof $.fn.validate !== 'undefined'));
+        });
+
         //自訂驗證方法
+        //檔案限制數量
+        $.validator.addMethod("filemaxcount", function (value, element, params) {
+            if (element.files.length > 2) {
+                return false;
+            }
+            return true;
+        });
+
+        //檔案副檔名限制
+        $.validator.addMethod("fileextension",
+            function (value, element, param) {
+                var validExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                var valid = true;
+
+                for (var i = 0; i < element.files.length; i++) {
+                    var fileName = element.files[i].name; // 獲取檔案名稱
+                    var fileExtension = fileName.split('.').pop().toLowerCase(); // 獲取檔案的副檔名並轉為小寫
+
+                    if (!validExtensions.includes(fileExtension)) {
+                        valid = false; // 如果檔案的副檔名不在 validExtensions 中，設置 valid 為 false
+                        break;
+                    }
+                }
+                return valid;
+            });
+
+        //單一檔案大小限制
+        $.validator.addMethod("filesize",
+            function (value, element, param) {
+                var maxSize = 1024 * 1024 * fileSize; // 1MB 的大小限制
+                var valid = true;
+                for (var i = 0; i < element.files.length; i++) {
+                    if (element.files[i].size > maxSize) {
+                        valid = false;
+                        break;
+                    }
+                }
+                return valid;
+            });
+
         //日期必須大於2020/01/01
         $.validator.addMethod("dateafter",
             function (value, element, param) {
@@ -63,6 +129,9 @@
             });
 
         $.validator.unobtrusive.adapters.addBool("dateafter");
+        $.validator.unobtrusive.adapters.addBool("filesize");
+        $.validator.unobtrusive.adapters.addBool("fileextension");
+        $.validator.unobtrusive.adapters.addBool("filemaxcount");
     </script>
 }
 
