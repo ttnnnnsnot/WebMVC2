@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
+using WebMVC2.Global;
 using WebMVC2.Interface;
 using WebMVC2.Services;
 

@@ -1,4 +1,4 @@
-﻿@model UserInfo
+﻿@model HomeViewModel
 
 <div><h3>運用JQuery Validation</h3></div>
 
@@ -10,47 +10,47 @@
     <div class="row row-cols-1 gy-2">
         <div class="col">
             <label for="username">帳號(可輸入123判斷已存在的資料)</label>
-            <input type="text" class="form-control" asp-for="UserID">
-            <span asp-validation-for="UserID" class="text-danger"></span>
+            <input type="text" class="form-control" asp-for="userInfo.UserID">
+            <span asp-validation-for="userInfo.UserID" class="text-danger"></span>
         </div>
 
         <div class="col">
             <label for="password">密碼</label>
-            <input type="password" class="form-control" asp-for="Password">
-            <span asp-validation-for="Password" class="text-danger"></span>
+            <input type="password" class="form-control" asp-for="userInfo.Password">
+            <span asp-validation-for="userInfo.Password" class="text-danger"></span>
         </div>
 
         <div class="col">
             <label for="confirmPassword">確認密碼</label>
-            <input type="password" class="form-control" asp-for="ConfirmPassword">
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            <input type="password" class="form-control" asp-for="userInfo.ConfirmPassword">
+            <span asp-validation-for="userInfo.ConfirmPassword" class="text-danger"></span>
         </div>
 
         <div class="col">
             <label for="email">EMAIL</label>
-            <input type="email" class="form-control" asp-for="Email">
-            <span asp-validation-for="Email" class="text-danger"></span>
+            <input type="email" class="form-control" asp-for="userInfo.Email">
+            <span asp-validation-for="userInfo.Email" class="text-danger"></span>
         </div>
 
         <div class="col">
             <label for="birthday">生日</label>
-            <input type="date" class="form-control" asp-for="Birthday" value="2021-01-01">
-            <span asp-validation-for="Birthday" class="text-danger"></span>
+            <input type="date" class="form-control" asp-for="userInfo.Birthday" value="2021-01-01">
+            <span asp-validation-for="userInfo.Birthday" class="text-danger"></span>
         </div>
 
         <div class="col">
             <label for="address">地址</label>
-            <input type="text" class="form-control" asp-for="Address">
-            <span asp-validation-for="Address" class="text-danger"></span>
+            <input type="text" class="form-control" asp-for="userInfo.Address">
+            <span asp-validation-for="userInfo.Address" class="text-danger"></span>
         </div>
 
         <div class="col mt-4">
-            <label for="files">上傳檔案(可選多個檔案)</label>
+            <label for="userInfo.Files">上傳檔案(可選多個檔案)</label>
             <div class="input-group">
-                <input type="file" asp-for="Files" class="form-control" name="Files" multiple>
-                <label class="input-group-text" for="Files">Upload</label>
+                <input type="file" asp-for="userInfo.Files" class="form-control" multiple>
+                <label class="input-group-text" asp-for="userInfo.Files">Upload</label>
             </div>
-            <span asp-validation-for="Files" class="text-danger"></span>
+            <span asp-validation-for="userInfo.Files" class="text-danger"></span>
         </div>
 
         <div class="col mt-3">
@@ -67,23 +67,33 @@
 
     <script>
         var fileSize = "@AppSettings.FileSizeLimit";
+        var fileCount = "@AppSettings.FileCount";
         $.validator.unobtrusive.options = {
             invalidHandler: function (event, validator) {
                 // 在整個表單驗證失敗時觸發其他動作
-                console.log(event, validator);
-            }
+            },
         };
 
-        $(document).ready(function () {
-            // 監控表單的提交事件
-            console.log("jQuery Version: " + $.fn.jquery);
-            console.log("jQuery Validation Loaded: " + (typeof $.fn.validate !== 'undefined'));
+        $(function () {
+            // 當表單提交時觸發
+            // 只能抓取按鈕的觸發，抓表單沒有用
+            $("button[type='submit']").on("click", function () {
+                event.preventDefault();
+                var form = $("form");
+                if (form.valid()) {
+                    OpenLoading();
+                    form.submit();
+                }
+            });
         });
+
+        
 
         //自訂驗證方法
         //檔案限制數量
         $.validator.addMethod("filemaxcount", function (value, element, params) {
-            if (element.files.length > 2) {
+            console.log(element.files.length);
+            if (element.files.length > fileCount) {
                 return false;
             }
             return true;

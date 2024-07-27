@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using WebMVC2.Global;
 using WebMVC2.Services;
 using WebMVC2.Validation;
 
@@ -36,7 +37,8 @@ namespace WebMVC2.Models
 
         [FileExtension(new string[] {".jpg",".jpeg",".png",".gif"}, ErrorMessage = "檔案格式錯誤")]
         [FileSize(3, ErrorMessage = "單一檔案大小必須小於3MB")]
-        [MaxFileCount(2, ErrorMessage = "最多上傳2個檔案")]
+        [MaxFileCount(AppSettings.FileCount, 
+            ErrorMessage = "檔案數量必須小於等於3個")]
         public List<IFormFile> Files { get; set; } = new List<IFormFile>();
         
         public List<string> FilesName { get; set; } = new List<string>();
