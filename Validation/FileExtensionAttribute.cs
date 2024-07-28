@@ -6,9 +6,9 @@ namespace WebMVC2.Validation
     public class FileExtensionAttribute : ValidationAttribute, IClientModelValidator
     {
         private string[] start;
-        public FileExtensionAttribute(string[] extensions)
+        public FileExtensionAttribute(string extensions)
         {
-            start = extensions;
+            start = extensions.Split(',');
         }
 
         public override bool IsValid(object? value)

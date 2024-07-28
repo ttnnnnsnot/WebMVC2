@@ -35,7 +35,7 @@ namespace WebMVC2.Models
         [Required(ErrorMessage = "地址是必填的")]
         public string Address { get; set; } = string.Empty;
 
-        [FileExtension(new string[] {".jpg",".jpeg",".png",".gif"}, ErrorMessage = "檔案格式錯誤")]
+        [FileExtension(AppSettings.FileExtensions, ErrorMessage = "檔案格式錯誤")]
         [FileSize(3, ErrorMessage = "單一檔案大小必須小於3MB")]
         [MaxFileCount(AppSettings.FileCount, 
             ErrorMessage = "檔案數量必須小於等於3個")]
@@ -46,7 +46,6 @@ namespace WebMVC2.Models
         /*
          * 
         [MinLength(1, ErrorMessage = "至少上傳一個檔案")]
-        [MaxLength(5, ErrorMessage = "最多上傳五個檔案")]
          * 
         [Required]: 確保屬性的值不為空。 
             用法：[Required]
