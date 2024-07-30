@@ -7,5 +7,7 @@ namespace WebMVC2.Interface
         Task<ResultMessage> GetUserAddAsync(UserInfo userInfo);
 
         Task<ResultMessage> GetUserAsync(string userId);
+
+        Task<bool> UserLoginAsync(UserLogin login);
     }
 }

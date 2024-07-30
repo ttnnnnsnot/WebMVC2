@@ -1,4 +1,4 @@
-﻿@model Login
+﻿@model LoginViewModel
 
 @{
     ViewData["Title"] = "Login";
@@ -10,14 +10,14 @@
             <h2 class="mb-4">Login</h2>
             <form method="post" asp-controller="Login" asp-action="Index" id="loginForm">
                 <div class="mb-3">
-                    <label for="UserName" class="form-label">UserName(帳號：123、密碼：123)</label>
-                    <input type="text" class="form-control" asp-for="UserName">
-                    <span asp-validation-for="UserName" class="text-danger"></span>
+                    <label for="userLogin.UserID" class="form-label">帳號</label>
+                    <input type="text" class="form-control" asp-for="userLogin.UserID">
+                    <span asp-validation-for="userLogin.UserID" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label for="password" class="form-label">PassWord</label>
-                    <input type="password" class="form-control" asp-for="Password">
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <label for="userLogin.Password" class="form-label">密碼</label>
+                    <input type="password" class="form-control" asp-for="userLogin.Password">
+                    <span asp-validation-for="userLogin.Password" class="text-danger"></span>
                 </div>
                 <input type="hidden" value="@ViewData["ReturnUrl"]" name="returnUrl">
                 <button type="submit" class="btn btn-primary">Login</button>

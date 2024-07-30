@@ -66,9 +66,15 @@
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 
     <script>
+        @{
+            string[] stringArray = AppSettings.FileExtensions.Split(",");
+            var jsonString = JsonSerializerService.Serialize(stringArray);
+        }
         var fileSizeLimit = "@AppSettings.FileSizeLimit";
         var fileCount = "@AppSettings.FileCount";
-        var fileExtensions = "@AppSettings.FileExtensions.Split(',')";
+        var fileExtensions = @Html.Raw(jsonString);
+        console.log(fileExtensions)
+
 
         $.validator.unobtrusive.options = {
             invalidHandler: function (event, validator) {
@@ -110,7 +116,7 @@
                 for (var i = 0; i < element.files.length; i++) {
                     var fileName = element.files[i].name; // 獲取檔案名稱
                     var fileExtension = fileName.split('.').pop().toLowerCase(); // 獲取檔案的副檔名並轉為小寫
-
+                    
                     if (!validExtensions.includes(fileExtension)) {
                         valid = false; // 如果檔案的副檔名不在 validExtensions 中，設置 valid 為 false
                         break;

@@ -1,4 +1,7 @@
-﻿using WebMVC2.Global;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using WebMVC2.Global;
 using WebMVC2.Interface;
 using WebMVC2.Models;
 
@@ -7,10 +10,12 @@ namespace WebMVC2.Services
     public class UserService : IUserService
     {
         private readonly IApiService _apiService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IApiService apiService)
+        public UserService(IApiService apiService, IHttpContextAccessor httpContextAccessor)
         {
             _apiService = apiService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         private void DeleteFile(List<string> filePaths)
@@ -98,6 +103,73 @@ namespace WebMVC2.Services
             List<ResultMessage> resultMessages = JsonSerializerService.Deserialize<List<ResultMessage>>(resultData.Data[0].GetRawText());
 
             return resultMessages[0];
+        }
+
+        public async Task<bool> UserLoginAsync(UserLogin login)
+        {
+            ResponseData responseData = new ResponseData()
+            {
+                ProcedureName = "UserLogin",
+                Parameters = new Dictionary<string, string>()
+                {
+                    {"UserID", login.UserID},
+                    {"PassWord", login.Password}
+                }
+            };
+
+            ResultData resultData = await _apiService.CallApi(responseData);
+
+            if (!resultData.resultMessage.Msg || resultData.Data == null || resultData.Data.Count == 0)
+            {
+                return false;
+            }
+
+            List<UserLogin> resultMessages = JsonSerializerService.Deserialize<List<UserLogin>>(resultData.Data[0].GetRawText());
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, resultMessages[0].UserID),
+                new Claim(ClaimTypes.Role, "Admin"),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(
+            claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                AllowRefresh = true,
+                // Refreshing the authentication session should be allowed.
+
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
+                // The time at which the authentication ticket expires. A 
+                // value set here overrides the ExpireTimeSpan option of 
+                // CookieAuthenticationOptions set with AddCookie.
+
+                IsPersistent = true,
+                // Whether the authentication session is persisted across 
+                // multiple requests. When used with cookies, controls
+                // whether the cookie's lifetime is absolute (matching the
+                // lifetime of the authentication ticket) or session-based.
+
+                IssuedUtc = DateTimeOffset.UtcNow,
+                // The time at which the authentication ticket was issued.
+
+                //RedirectUri = <string>
+                // The full path or absolute URI to be used as an http 
+                // redirect response value.
+            };
+
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                return false;
+            }
+
+            await _httpContextAccessor.HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(claimsIdentity),
+            authProperties);
+
+            return true;
         }
     }
 }

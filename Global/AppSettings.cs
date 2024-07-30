@@ -20,6 +20,6 @@
         //單個上傳檔案限制為1MB (1024 * 1024 * 1
         public const long FileSizeLimit = 1024 * 1024 * 3;
 
-        public const string FileExtensions = ".jpg,.jpeg,.png,.gif";
+        public const string FileExtensions = "jpg,jpeg,png,gif";
     }
 }

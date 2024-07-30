@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
+using Serilog;
 using WebMVC2.Global;
 using WebMVC2.Interface;
 using WebMVC2.Services;
@@ -8,6 +9,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// 設定引用HttpContext的接口
+builder.Services.AddHttpContextAccessor();
+
+// 設置 Serilog
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7) // 每日滾動新文件
+    .CreateLogger();
+
+// 設置 Serilog
+builder.Host.UseSerilog();
 
 // Add HttpClient
 builder.Services.AddHttpClient();
@@ -43,6 +56,8 @@ builder.Services.AddScoped<IApiServiceHttpClient, ApiServiceHttpClient>();
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddSingleton<ILoggerService, LoggerService>();
 
 var app = builder.Build();
 

@@ -23,7 +23,7 @@ namespace WebMVC2.Validation
 
             foreach (var formFile in formFiles)
             {
-                var extension = Path.GetExtension(formFile.FileName).ToLowerInvariant();
+                var extension = Path.GetExtension(formFile.FileName).ToLowerInvariant().TrimStart('.');
 
                 if (!start.Contains(extension))
                 {
