@@ -6,17 +6,20 @@ namespace WebMVC2.Controllers
 {
     public class BaseController : Controller
     {
+        public override void OnActionExecuted(ActionExecutedContext context)
+        {
+            base.OnActionExecuted(context);
+            // 设置共享数据
+            if (context.Controller is Controller controller && controller.ViewData.Model is BaseViewModel baseViewModel)
+            {
+                // 设置其他共享数据...
+            }
+        }
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
 
-            // 设置共享数据
-            if (context.Controller is Controller controller && controller.ViewData.Model is BaseViewModel baseViewModel)
-            {
-                baseViewModel.SharedData1 = "Some shared data";
-                baseViewModel.SharedData2 = "Other shared data";
-                // 设置其他共享数据...
-            }
+            
         }
     }
 

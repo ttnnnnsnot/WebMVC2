@@ -8,7 +8,21 @@ namespace WebMVC2.Models
         public int TotalRecords { get; set; }
         public int ItemSize { get; set; }
         public int PageNumSize { get; set; } = 8;
-        public int TotalPages => (int)Math.Ceiling((decimal)TotalRecords / ItemSize);
+        public int TotalPages
+        {
+            get
+            {
+                if (ItemSize == 0 || TotalRecords == 0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return (int)Math.Ceiling((decimal)TotalRecords / ItemSize);
+                }
+            }
+        }
+                
         public string UrlControllerName { get; set; } = string.Empty;
         public string UrlActionName { get; set; } = string.Empty;
         public string UrlParam { get; set; } = string.Empty;

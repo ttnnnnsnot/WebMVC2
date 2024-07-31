@@ -52,10 +52,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Login/Index";
     });
 
-builder.Services.AddScoped<IApiServiceHttpClient, ApiServiceHttpClient>();
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IShopCarService, ShopCarService>();
 
 builder.Services.AddSingleton<ILoggerService, LoggerService>();
 
@@ -84,6 +84,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=DataList}/{action=Index}/{id?}");
 
 app.Run();

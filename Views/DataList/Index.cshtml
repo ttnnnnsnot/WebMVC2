@@ -1,6 +1,8 @@
-﻿@{
-    var productItems = (ViewData["Products"] as IEnumerable<ProductItem> ?? new List<ProductItem>());
-    var pageNum = (ViewData["PageNums"] as PageNum ?? new PageNum());
+﻿@model DataListViewData
+
+@{
+    var productItems = Model.productItems as IEnumerable<ProductItem> ;
+    var pageNum = Model.pageNum as PageNum;
 
     var Url0 = @Url.Action(pageNum.UrlActionName, pageNum.UrlControllerName, new { id = pageNum.CurrentPage, productTypeId = 0 });
     var Url1 = @Url.Action(pageNum.UrlActionName, pageNum.UrlControllerName, new { id = pageNum.CurrentPage, productTypeId = 1 });
@@ -46,13 +48,13 @@
                         <div class="card h-100">
                             <img src="https://placehold.it/150x150" class="card-img-top" alt="商品圖片">
                             <div class="card-body">
-                                <h5 class="card-title">@item.Name</h5>
+                                <h5 class="card-title text-truncate">@item.Name</h5>
                                 <p class="card-text">@item.Description</p>
                                 <p class="card-text"><strong>價格: @item.Price.ToString("C0")</strong></p>
                                 <div class="d-flex justify-content-end">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">查看詳細</button>
-                                        <button type="button" class="btn btn-sm btn-outline-primary">加入購物車</button>
+                                        <button type="button" onclick="productDetail.Show('@item.Id')" class="btn btn-sm btn-outline-secondary">查看詳細</button>
+                                        <button type="button" onclick="shopCar.Add('@item.Id','1')" class="btn btn-sm btn-outline-primary">加入購物車</button>
                                     </div>
                                 </div>
                             </div>
@@ -62,13 +64,17 @@
             </div>
 
             @await Html.PartialAsync("_PageNumPartial", pageNum)
+            <div id="ProductDetail">
+                @await Html.PartialAsync("_ProductDetail", Model.productItem)
+            </div>
+            
         </main>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        var productTypeId = '@ViewData["productTypeId"]';
+        var productTypeId = '@Model.productTypeId';
         $('#dropdown-menu-id a').click(function () {
             var Id = $(this).data('producttypeid');
             var _left_this = GetMenuthis('#left-menu-id a', 'producttypeid', Id);
@@ -108,7 +114,54 @@
             _this.addClass('active');
         }
 
+        class ShopCar {
+            shopCarSum = "#shopCarSum";
+            constructor() {
+                this.Get();
+            }
+
+            CheckShow(Num) {
+                var _this = this;
+                if (Num <= 0) {
+                    $(_this.shopCarSum).hide();
+                } else {
+                    $(_this.shopCarSum).html(Num);
+                    $(_this.shopCarSum).show();
+                }
+            }
+
+            Get() {
+                let _this = this;
+                let url = '@Url.Action("GetShopCarSum", "DataList")';
+                $.get(url, function (item) {
+                    _this.CheckShow(item)
+                })
+            }
+
+            Add(id, Num) {
+                let _this = this;
+                let url = '@Url.Action("AddShopCar", "DataList")' + '/' + id + '?Num=' + Num;
+                $.get(url, function (item) {
+                    _this.CheckShow(item)
+                })
+            }
+        }
+
+        class ProductDetail {
+            Show(Id) {
+                let url = '@Url.Action("GetProductItem", "DataList")' + '/' + Id;
+                $.get(url, function (item) {
+                    $('#ProductDetail').html(item);
+                    $('#productModal').modal('show');
+                })
+            }
+        }
+
+        var shopCar;
+        var productDetail
         $(document).ready(function () {
+            shopCar = new ShopCar();
+            productDetail = new ProductDetail();
             ChangeProductTypeId(productTypeId);
         });
     </script>

@@ -54,5 +54,45 @@ namespace WebMVC2.Controllers
 
             return LocalRedirect(returnUrl ?? "/");
         }
+
+
+        [HttpGet]
+        // 可用於對資料庫進行驗證用戶名
+        public async Task<IActionResult> CheckUserID(string UserID)
+        {
+            var result = await _userService.GetUserAsync(UserID);
+            if (result.Msg)
+            {
+                return Json("帳號已經被註冊");
+            }
+            return Json(true);
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("/Login/Register")]
+        [ModelStateFilter]
+        public async Task<IActionResult> Register(UserInfo userInfo)
+        {
+            await Task.Delay(1000);
+
+            ResultMessage result = await _userService.GetUserAddAsync(userInfo);
+
+            TempData["ErrorMessage"] = result.MsgText;
+
+            if (result.Msg)
+            {
+                // 清空所有模型狀態
+                ModelState.Clear();
+                // 或者，清空特定欄位的模型狀態
+                //ModelState.Remove("UserInfo");
+            }
+
+            return View();
+        }
     }
 }
