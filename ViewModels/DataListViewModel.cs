@@ -2,7 +2,7 @@
 
 namespace WebMVC2.ViewModels
 {
-    public class DataListViewData : BaseViewModel
+    public class DataListViewModel : BaseViewModel
     {
         public List<ProductItem> productItems { get; set; } = new List<ProductItem>();
         public PageNum pageNum { get; set; } = new PageNum();

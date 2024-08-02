@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 using WebMVC2.Interface;
 using WebMVC2.Models;
 using WebMVC2.ViewModels;
@@ -10,12 +9,10 @@ namespace WebMVC2.Controllers
     public class DataListController : BaseController
     {
         private readonly IProductService _productService;
-        private readonly IShopCarService _shopCarService;
 
-        public DataListController(IProductService productService, IShopCarService shopCarService)
+        public DataListController(IProductService productService)
         {
             _productService = productService;
-            _shopCarService = shopCarService;
         }
 
         [HttpGet]
@@ -26,7 +23,7 @@ namespace WebMVC2.Controllers
 
             var (products, pageInfo) = await _productService.GetProductsAsync(productTypeId, currentPage, itemSize);
 
-            DataListViewData dataListViewData = new DataListViewData();
+            DataListViewModel dataListViewData = new DataListViewModel();
             dataListViewData.productItems = products;
             dataListViewData.pageNum = pageInfo;
             dataListViewData.productTypeId = productTypeId;
@@ -37,13 +34,31 @@ namespace WebMVC2.Controllers
         [HttpGet]
         public async Task<IActionResult> AddShopCar(int Id, int Num)
         {
-            return Json(await _shopCarService.Add(Id, Num));
+            return Json(await ShopCarService.Add(Id, Num));
+        }
+
+        [HttpGet]
+        public IActionResult UpdShopCar(int Id, int Num)
+        {
+            return Json(ShopCarService.Upd(Id, Num));
         }
 
         [HttpGet]
         public IActionResult GetShopCarSum()
         {
-            return Json(_shopCarService.Get());
+            return Json(ShopCarService.Get());
+        }
+
+        [HttpGet]
+        public IActionResult GetShopCar()
+        {
+            return Json(ShopCarService.GetShopCar());
+        }
+
+        [HttpGet]
+        public IActionResult DelShopCar(int Id)
+        {
+            return Json(ShopCarService.Delete(Id));
         }
 
         [HttpGet]
@@ -53,10 +68,16 @@ namespace WebMVC2.Controllers
             return PartialView("_ProductDetail", productItem);
         }
 
-        [Authorize(Roles = "Admin2")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Index2()
         {
-            return View();
+            return View(ShopCarService.GetShopCar());
+        }
+
+        [Authorize(Roles = "Admin2")]
+        public IActionResult Index3()
+        {
+            return View(ShopCarService.GetShopCar());
         }
     }
 }

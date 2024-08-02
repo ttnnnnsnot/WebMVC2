@@ -7,7 +7,7 @@ using WebMVC2.Models;
 
 namespace WebMVC2.Controllers
 {    
-    public class LoginController : Controller
+    public class LoginController : BaseController
     {
         private readonly IUserService _userService;
 
@@ -56,11 +56,11 @@ namespace WebMVC2.Controllers
         }
 
 
-        [HttpGet]
+
         // 可用於對資料庫進行驗證用戶名
-        public async Task<IActionResult> CheckUserID(string UserID)
+        public async Task<IActionResult> CheckUserID(UserInfo userInfo)
         {
-            var result = await _userService.GetUserAsync(UserID);
+            var result = await _userService.GetUserAsync(userInfo.UserID);
             if (result.Msg)
             {
                 return Json("帳號已經被註冊");

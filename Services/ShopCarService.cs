@@ -41,6 +41,26 @@ namespace WebMVC2.Services
             }
         }
 
+        public ShopCar Upd(int Id, int Num)
+        {
+            ShopCar shopCar = Load();
+
+            var existingItem = shopCar.productItem.FirstOrDefault(item => item.Id == Id);
+            if (existingItem != null)
+            {
+                if(Num == -1 && existingItem.Num == 1)
+                {
+                    return shopCar;
+                }
+
+                existingItem.Num += Num;
+            }
+
+            Save(shopCar);
+
+            return shopCar;
+        }
+
         public async Task<int> Add(int Id, int Num)
         {
             ShopCar shopCar = Load();
@@ -78,7 +98,7 @@ namespace WebMVC2.Services
             return shopCar.Sum;
         }
 
-        public void Delete(int Id)
+        public ShopCar Delete(int Id)
         {
             ShopCar shopCar = Load();
 
@@ -89,12 +109,18 @@ namespace WebMVC2.Services
             }
 
             Save(shopCar);
+            return shopCar;
         }
 
         public int Get()
         {
             ShopCar shopCar = Load();
             return shopCar.productItem.Count;
+        }
+
+        public ShopCar GetShopCar()
+        {
+            return Load();
         }
     }
 }

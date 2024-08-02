@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Features;
 using Serilog;
 using WebMVC2.Global;
@@ -6,6 +7,9 @@ using WebMVC2.Interface;
 using WebMVC2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// 設定 Configuration
+AppSettings.Configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -15,8 +19,7 @@ builder.Services.AddHttpContextAccessor();
 
 // 設置 Serilog
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7) // 每日滾動新文件
+    .ReadFrom.Configuration(AppSettings.Configuration)
     .CreateLogger();
 
 // 設置 Serilog
@@ -24,9 +27,6 @@ builder.Host.UseSerilog();
 
 // Add HttpClient
 builder.Services.AddHttpClient();
-
-// 設定 Configuration
-AppSettings.Configuration = builder.Configuration;
 
 // 設定 MultipartBodyLengthLimit
 builder.Services.Configure<FormOptions>(options =>
@@ -36,6 +36,11 @@ builder.Services.Configure<FormOptions>(options =>
     // 表單資料暫存到記憶體前的閾值，超過此大小就會使用暫存檔案
     options.MemoryBufferThreshold = 1024 * 1024 * 1;
 });
+
+// 設定數據保護的密鑰環持久化
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(AppSettings.CookieKey)) // 請根據實際情況設置目錄
+    .SetApplicationName(AppSettings.ApplicationName);
 
 // 設定session
 builder.Services.AddRazorPages().AddSessionStateTempDataProvider();

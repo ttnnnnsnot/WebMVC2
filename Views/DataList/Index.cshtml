@@ -1,4 +1,4 @@
-﻿@model DataListViewData
+﻿@model DataListViewModel
 
 @{
     var productItems = Model.productItems as IEnumerable<ProductItem> ;
@@ -114,39 +114,6 @@
             _this.addClass('active');
         }
 
-        class ShopCar {
-            shopCarSum = "#shopCarSum";
-            constructor() {
-                this.Get();
-            }
-
-            CheckShow(Num) {
-                var _this = this;
-                if (Num <= 0) {
-                    $(_this.shopCarSum).hide();
-                } else {
-                    $(_this.shopCarSum).html(Num);
-                    $(_this.shopCarSum).show();
-                }
-            }
-
-            Get() {
-                let _this = this;
-                let url = '@Url.Action("GetShopCarSum", "DataList")';
-                $.get(url, function (item) {
-                    _this.CheckShow(item)
-                })
-            }
-
-            Add(id, Num) {
-                let _this = this;
-                let url = '@Url.Action("AddShopCar", "DataList")' + '/' + id + '?Num=' + Num;
-                $.get(url, function (item) {
-                    _this.CheckShow(item)
-                })
-            }
-        }
-
         class ProductDetail {
             Show(Id) {
                 let url = '@Url.Action("GetProductItem", "DataList")' + '/' + Id;
@@ -157,10 +124,8 @@
             }
         }
 
-        var shopCar;
         var productDetail
         $(document).ready(function () {
-            shopCar = new ShopCar();
             productDetail = new ProductDetail();
             ChangeProductTypeId(productTypeId);
         });

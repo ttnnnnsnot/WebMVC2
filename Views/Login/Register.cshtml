@@ -9,7 +9,7 @@
 
     <div class="row row-cols-1 gy-2">
         <div class="col">
-            <label for="username">帳號(可輸入123判斷已存在的資料)</label>
+            <label for="username">帳號(可輸入123456判斷已存在的資料)</label>
             <input type="text" class="form-control" asp-for="userInfo.UserID">
             <span asp-validation-for="userInfo.UserID" class="text-danger"></span>
         </div>
@@ -70,11 +70,10 @@
             string[] stringArray = AppSettings.FileExtensions.Split(",");
             var jsonString = JsonSerializerService.Serialize(stringArray);
         }
-                var fileSizeLimit = "@AppSettings.FileSizeLimit";
+
+        var fileSizeLimit = "@AppSettings.FileSizeLimit";
         var fileCount = "@AppSettings.FileCount";
         var fileExtensions = @Html.Raw(jsonString);
-        console.log(fileExtensions)
-
 
         $.validator.unobtrusive.options = {
             invalidHandler: function (event, validator) {
@@ -95,12 +94,9 @@
             });
         });
 
-
-
         //自訂驗證方法
         //檔案限制數量
         $.validator.addMethod("filemaxcount", function (value, element, params) {
-            console.log(element.files.length);
             if (element.files.length > fileCount) {
                 return false;
             }
