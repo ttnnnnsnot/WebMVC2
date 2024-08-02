@@ -76,10 +76,28 @@
             var errorMessage = '@TempData["ErrorMessage"]';
             // 獲取錯誤訊息
             if (errorMessage) {
-                $('#MessageContext').html(errorMessage);
-                $('#exampleModal').modal('show');
+                OpenAlertMessage(errorMessage);
             }
         });
+
+        function OpenConfirm(html, callbackfn, headerhtml = 'Message') {
+            let msg = $('#staticBackdrop');
+            msg.find('.modal-title').html(headerhtml);
+            msg.find('.modal-body').html(html);
+            msg.modal('show');
+
+            msg.find('#DoneBtn').click(function () {
+                msg.modal("hide");
+                callbackfn();
+                OpenLoading();
+            });
+        }
+
+        function OpenAlertMessage(html) {
+            let msg = $('#exampleModal');
+            msg.find('.modal-body').html(html);
+            msg.modal('show');
+        }
 
         function OpenLoading() {
             $('#loadingModal').modal('show');
@@ -88,7 +106,6 @@
         function CloseLoading() {
             $('#loadingModal').modal('hide');
         }
-
 
         class ShopCar {
             shopCarSum = "#shopCarSum";

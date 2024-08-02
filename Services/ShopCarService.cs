@@ -1,4 +1,7 @@
-﻿using WebMVC2.Global;
+﻿using System.Dynamic;
+using System.Security.Claims;
+using System.Text.Json;
+using WebMVC2.Global;
 using WebMVC2.Interface;
 using WebMVC2.Models;
 
@@ -15,6 +18,48 @@ namespace WebMVC2.Services
             _apiService = apiService;
         }
 
+        public async Task<ResultMessage> ShoppingDone()
+        {
+            ResultMessage resultData = new ResultMessage();
+
+            ShopCar shopCar = Load();
+
+            var user = _httpContextAccessor?.HttpContext?.User;
+
+            var userid = user?.FindFirst(ClaimTypes.Name)?.Value;
+
+            if(string.IsNullOrEmpty(userid))
+            {
+                resultData.MsgText = "請先行登入";
+                return resultData;
+            }
+
+            ResponseData responseData = new ResponseData()
+            {
+                ProcedureName = "ShoppingDone",
+                Parameters = new Dictionary<string, string>() {
+                        { "UserID" , userid.ToString() }
+                },
+                TableTypeName = "ShoppingDetailType",
+                TableData = ConvertToDictionaryList.Convert(shopCar.productItem)
+            };
+
+            ResultData res = await _apiService.CallApi(responseData);
+
+            if(!res.resultMessage.Msg)
+            {
+                return res.resultMessage;
+            }
+
+            List<ResultMessage> resultMessages = JsonSerializerService.Deserialize<List<ResultMessage>>(res.Data[0].GetRawText());
+
+            if(resultMessages.First().Msg)
+            {
+                DeleteAll();
+            }
+
+            return resultMessages.First();
+        }
         private void Save(ShopCar shopCar)
         {
             var serializedData = JsonSerializerService.Serialize(shopCar);
@@ -96,6 +141,11 @@ namespace WebMVC2.Services
             Save(shopCar);
 
             return shopCar.Sum;
+        }
+
+        private void DeleteAll()
+        {
+            _httpContextAccessor?.HttpContext?.Response.Cookies.Delete(nameof(CookieName.ShopCar));
         }
 
         public ShopCar Delete(int Id)

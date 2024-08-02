@@ -1,4 +1,5 @@
-﻿using WebMVC2.Interface;
+﻿using WebMVC2.Global;
+using WebMVC2.Interface;
 using WebMVC2.Models;
 
 namespace WebMVC2.Services

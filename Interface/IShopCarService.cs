@@ -9,5 +9,6 @@ namespace WebMVC2.Interface
         public ShopCar Delete(int Id);
         public ShopCar GetShopCar();
         public ShopCar Upd(int Id, int Num);
+        public Task<ResultMessage> ShoppingDone();
     }
 }

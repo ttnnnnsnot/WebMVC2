@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace WebMVC2.Services
+namespace WebMVC2.Global
 {
     /// <summary>
     /// 提供 JSON 序列化和反序列化的靜態服務類。

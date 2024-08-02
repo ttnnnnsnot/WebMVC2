@@ -9,6 +9,7 @@ namespace WebMVC2.Controllers
     {
         private IShopCarService? _shopCarService;
         private ILoggerService? _loggerService;
+        protected string ErrorMessage = string.Empty;
 
         protected IShopCarService ShopCarService
         {
@@ -42,6 +43,11 @@ namespace WebMVC2.Controllers
             {
                 // 设置其他共享数据...
                 baseViewModel.shopCar = ShopCarService.GetShopCar();
+            }
+
+            if(!string.IsNullOrEmpty(ErrorMessage))
+            {
+                TempData["ErrorMessage"] = ErrorMessage;
             }
         }
     }

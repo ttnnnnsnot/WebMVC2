@@ -38,10 +38,11 @@
 
 <!-- 其他商品項目 -->
 <div class="container-fluid fixed-bottom bg-light" id="fixedBar" style="line-height:60px;">
-    <div class="row">
-        <div class="col-12 d-flex justify-content-end" style="font-size:24px;">
+    <div class="container">
+        <div class="col-12 text-end fs-5">
             <span class="me-5">商品總數:<span id="SumItem"></span></span>
             <span class="me-5">總金額:<span id="SumPrice"></span></span>
+            <button class="btn btn-primary" onclick="shopCarDetail.CheckOutItem()">結帳</button>
         </div>
     </div>
 </div>
@@ -89,6 +90,34 @@
                 return def.promise();
             }
 
+            CheckOutItem() {
+                let _this = this;
+                if (_this._shopCarObject.productItem.length <= 0) {
+                    OpenAlertMessage("您目前無商品需要結帳");
+                }
+
+                let htmlmsg = `
+                        商品總數:${this._shopCarObject.sum}<br/>
+                        總金額:${this.ToPriceType(this._shopCarObject.sumPrice)}<br/><br/>
+                        ps.送出後等待1秒讓動畫執行
+                        `
+
+                OpenConfirm(htmlmsg, function () {
+                    _this.SendToCheckOut();
+                }, "結帳(批次寫入)")
+            }
+
+            SendToCheckOut() {
+                let url = '@Url.Action("CheckOut", "DataList")';
+                var form = $('<form>', {
+                    'method': 'get',
+                    'action': url
+                });
+
+                $('body').append(form);
+                form.submit();
+            }
+
             Del(Id) {
                 let _this = this;
 
@@ -130,10 +159,12 @@
             ChangeTotal() {
                 let _this = this;
                 let val = this._shopCarObject.sumPrice;
+                val = _this.ToPriceType(val);
+                $(_this._SumPriceId).html(val);
+            }
 
-                val = parseInt(val).toLocaleString('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
-
-                $(_this._SumPriceId).html('NT' + val);
+            ToPriceType(val) {
+                return 'NT'+parseInt(val).toLocaleString('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
             }
 
             ChangeCount() {

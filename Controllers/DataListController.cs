@@ -74,6 +74,19 @@ namespace WebMVC2.Controllers
             return View(ShopCarService.GetShopCar());
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CheckOut()
+        {
+            await Task.Delay(1000);
+            ResultMessage resultData = await ShopCarService.ShoppingDone();
+            ErrorMessage = resultData.MsgText;
+            return RedirectToAction("Index", "DataList");
+        }
+
+
+
+
         [Authorize(Roles = "Admin2")]
         public IActionResult Index3()
         {
