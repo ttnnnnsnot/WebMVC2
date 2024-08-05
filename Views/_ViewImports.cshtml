@@ -8,6 +8,8 @@
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService
 
+@*防止跨網站偽造要求 (XSRF/CSRF) 攻擊*@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 

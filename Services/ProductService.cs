@@ -45,6 +45,11 @@ namespace WebMVC2.Services
 
             ResultData resultData = await _apiService.CallApi(data);
 
+            if(resultData.Data.Count <= 0)
+            {
+                return (new List<ProductItem>(), new PageNum());
+            }
+
             List<ProductItem> products = JsonSerializerService.Deserialize<List<ProductItem>>(resultData.Data[0].GetRawText());
             List<PageNum> pageNums = JsonSerializerService.Deserialize<List<PageNum>>(resultData.Data[1].GetRawText());
 

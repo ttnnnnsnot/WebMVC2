@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using WebMVC2.Global;
 using WebMVC2.Interface;
@@ -8,46 +9,46 @@ using WebMVC2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// �]�w Configuration
+// 設定 Configuration
 AppSettings.Configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// �]�w�ޥ�HttpContext�����f
+// 設定引用HttpContext的接口
 builder.Services.AddHttpContextAccessor();
 
-// �]�m Serilog
+// 設置 Serilog
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(AppSettings.Configuration)
     .CreateLogger();
 
-// �]�m Serilog
+// 設置 Serilog
 builder.Host.UseSerilog();
 
 // Add HttpClient
 builder.Services.AddHttpClient();
 
-// �]�w MultipartBodyLengthLimit
+// 設定 MultipartBodyLengthLimit
 builder.Services.Configure<FormOptions>(options =>
 {
-    // ��@�������ƨϥΪ��w�]�O128MB�A�b���]�w1MB
+    // 單一次表單資料使用的預設是128MB，在此設定1MB
     options.MultipartBodyLengthLimit = 1024 * 1024 * 10;
-    // �����ƼȦs��O����e���H�ȡA�W�L���j�p�N�|�ϥμȦs�ɮ�
+    // 表單資料暫存到記憶體前的閾值，超過此大小就會使用暫存檔案
     options.MemoryBufferThreshold = 1024 * 1024 * 1;
 });
 
-// �]�w�ƾګO�@���K�_�����[��
+// 設定數據保護的密鑰環持久化
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(AppSettings.CookieKey)) // �Юھڹ�ڱ��p�]�m�ؿ�
+    .PersistKeysToFileSystem(new DirectoryInfo(AppSettings.CookieKey)) // 請根據實際情況設置目錄
     .SetApplicationName(AppSettings.ApplicationName);
 
-// �]�wsession
+// 設定session
 builder.Services.AddRazorPages().AddSessionStateTempDataProvider();
 builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
 builder.Services.AddSession();
 
-// �]�mcookies�n�J���
+// 設置cookies登入驗証
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -56,6 +57,24 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Login/AccessDenied";
         options.LoginPath = "/Login/Index";
     });
+
+// 設定AddAntiforgery驗証 防止跨網站偽造要求 (XSRF/CSRF) 攻擊
+builder.Services.AddAntiforgery(options =>
+{
+    // Set Cookie properties using CookieBuilder properties†.
+    options.FormFieldName = "AntiforgeryFieldname";
+    options.HeaderName = "X-CSRF-TOKEN-HEADERNAME";
+    options.SuppressXFrameOptionsHeader = false;
+});
+
+// 全域設定
+// 建議在非 API 案例中廣泛使用 AutoValidateAntiforgeryToken 。 此屬性可確保 POST 動作預設受到保護
+// IgnoreAntiforgeryToken 篩選條件可用來消除指定動作的防偽權杖需求
+// ValidateAntiForgeryToken 除非要求包含有效的防偽權杖，否則對套用此篩選動作的要求會遭到封鎖
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
 
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -79,10 +98,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// �]�msession
+// 設置session
 app.UseSession();
 
-// �]�mcookies�n�J���
+// 設置cookies登入驗証
 app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
