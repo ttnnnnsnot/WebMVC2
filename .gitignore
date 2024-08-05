@@ -43,3 +43,4 @@ msbuild.err
 msbuild.wrn
 # user files
 /wwwroot/userfiles/*
+/logs/*
