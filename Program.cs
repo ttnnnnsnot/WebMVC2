@@ -67,8 +67,9 @@ builder.Services.AddAntiforgery(options =>
     options.SuppressXFrameOptionsHeader = false;
 });
 
+
 // 全域設定
-// 建議在非 API 案例中廣泛使用 AutoValidateAntiforgeryToken 。 此屬性可確保 POST 動作預設受到保護
+//使用 AutoValidateAntiforgeryToken 屬性，而非廣泛套用 ValidateAntiForgeryToken 屬性，然後用 IgnoreAntiforgeryToken 屬性將其覆寫。 此屬性的運作方式與 ValidateAntiForgeryToken 屬性相同，不同之處在於它在處理使用下列 HTTP 方法提出的要求時不需要權杖：GET、HEAD、OPTIONS、TRACE
 // IgnoreAntiforgeryToken 篩選條件可用來消除指定動作的防偽權杖需求
 // ValidateAntiForgeryToken 除非要求包含有效的防偽權杖，否則對套用此篩選動作的要求會遭到封鎖
 builder.Services.AddControllersWithViews(options =>

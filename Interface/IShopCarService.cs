@@ -1,4 +1,5 @@
 ﻿using WebMVC2.Models;
+using WebMVC2.ViewModels;
 
 namespace WebMVC2.Interface
 {
@@ -10,5 +11,6 @@ namespace WebMVC2.Interface
         public ShopCar GetShopCar();
         public ShopCar Upd(int Id, int Num);
         public Task<ResultMessage> ShoppingDone();
+        public Task<OrderDetailViewModel> UserOrderDetail(int StatusType = 1);
     }
 }

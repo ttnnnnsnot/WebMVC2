@@ -85,13 +85,16 @@ namespace WebMVC2.Controllers
             return RedirectToAction("Index", "DataList");
         }
 
-
-
-
         [Authorize(Roles = "Admin2")]
         public IActionResult Index3()
         {
             return View(ShopCarService.GetShopCar());
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Index4(int? id)
+        {
+            return View(await ShopCarService.UserOrderDetail(id ?? 1));
         }
     }
 }

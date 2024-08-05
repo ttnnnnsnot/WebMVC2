@@ -4,6 +4,7 @@ using System.Text.Json;
 using WebMVC2.Global;
 using WebMVC2.Interface;
 using WebMVC2.Models;
+using WebMVC2.ViewModels;
 
 namespace WebMVC2.Services
 {
@@ -16,6 +17,45 @@ namespace WebMVC2.Services
         {
             _httpContextAccessor = httpContextAccessor;
             _apiService = apiService;
+        }
+
+        private string GetUserId()
+        {
+            var user = _httpContextAccessor?.HttpContext?.User;
+
+            var userid = user?.FindFirst(ClaimTypes.Name)?.Value;
+
+            return userid ?? string.Empty;
+        }
+
+        public async Task<OrderDetailViewModel> UserOrderDetail(int StatusType = 1)
+        {
+            OrderDetailViewModel orderDetailViewModel = new OrderDetailViewModel();
+
+            var userid = GetUserId();
+
+            ResponseData responseData = new ResponseData()
+            {
+                ProcedureName = "UserOrderDetail",
+                Parameters = new Dictionary<string, string>() {
+                        { "UserID" , userid.ToString() },
+                        { "StatusType" , StatusType.ToString() }
+                },
+            };
+
+            ResultData res = await _apiService.CallApi(responseData);
+
+            if (!res.resultMessage.Msg || res.Data.Count <= 0)
+            {
+                return orderDetailViewModel;
+            }
+
+            orderDetailViewModel.orderInfos = JsonSerializerService.Deserialize<List<OrderInfo>>(res.Data[0].GetRawText());
+
+            orderDetailViewModel.productItemForOrders = JsonSerializerService.Deserialize<List<ProductItemForOrder>>(res.Data[1].GetRawText());
+
+            return orderDetailViewModel;
+
         }
 
         public async Task<ResultMessage> ShoppingDone()
