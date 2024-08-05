@@ -1,8 +1,9 @@
-﻿namespace WebMVC2.ViewModels
+﻿using WebMVC2.Models;
+
+namespace WebMVC2.ViewModels
 {
     public class BaseViewModel
     {
-        public string SharedData1 { get; set; } = string.Empty;
-        public string SharedData2 { get; set; } = string.Empty;
+        public ShopCar shopCar { get; set; } = new ShopCar();
     }
 }

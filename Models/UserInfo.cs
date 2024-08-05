@@ -9,7 +9,7 @@ namespace WebMVC2.Models
     public class UserInfo
     {
         [StringLength(20, ErrorMessage = "長度必須介於 {2} and {1}.", MinimumLength = 6)]
-        [Remote(action: "CheckUserID", controller: "Home")]
+        [Remote(action: "CheckUserID", controller: "Login")]
         [Required(ErrorMessage = "帳號是必填的")]
         [RegularExpression("^[A-Za-z0-9_@]+$", ErrorMessage = "帳號只能包含英文數字")]
         public string UserID { get; set; } = string.Empty;

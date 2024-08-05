@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - WebMVC2</title>
+    <link href="~/lib/bootstrap/dist/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WebMVC2.styles.css" asp-append-version="true" />
@@ -12,9 +13,17 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebMVC2</a>
+                <a class="navbar-brand" asp-area="" asp-controller="DataList" asp-action="Index">WebMVC2</a>
 
-                <span class="navbar-text ms-auto order-sm-2">
+                <span class="navbar-text ms-auto order-sm-2 d-flex justify-content-end">
+
+                    <a href='@Url.Action("Index2","DataList")' class="nav-link text-dark position-relative">
+                        <span class="bi bi-cart4 position-absolute start-0 translate-middle" style="font-size:24px; top:17px">
+                            <span id="shopCarSum" class="position-absolute top-0 start-100 badge rounded-pill bg-secondary" style="font-size:10px"></span>
+                        </span>
+                    </a>
+
+                    <a class="nav-link text-dark" asp-controller="Login" asp-action="Register">Register</a>
                     @if (User.Identity.IsAuthenticated)
                     {
                         <a class="nav-link text-dark" asp-controller="Login" asp-action="LogOut">LogOut</a>
@@ -33,13 +42,13 @@
                 <div class="navbar-collapse collapse">
                     <ul class="navbar-nav nav">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">表單驗証</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index">商品列表</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index">資料列表</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index3">沒權限</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index2">沒權限</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index4">訂單資訊</a>
                         </li>
                     </ul>
                 </div>
@@ -59,21 +68,39 @@
         </div>
     </footer>
 
-    <partial name="~/Views/Shared/_AlertPartial.cshtml" />
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
     <script>
+        var shopCar;
+
         $(document).ready(function () {
+            shopCar = new ShopCar();
             var errorMessage = '@TempData["ErrorMessage"]';
             // 獲取錯誤訊息
-            if (errorMessage) {                
-                $('#MessageContext').html(errorMessage);
-                $('#exampleModal').modal('show');
+            if (errorMessage) {
+                OpenAlertMessage(errorMessage);
             }
         });
+
+        function OpenConfirm(html, callbackfn, headerhtml = 'Message') {
+            let msg = $('#staticBackdrop');
+            msg.find('.modal-title').html(headerhtml);
+            msg.find('.modal-body').html(html);
+            msg.modal('show');
+
+            msg.find('#DoneBtn').click(function () {
+                msg.modal("hide");
+                callbackfn();
+                OpenLoading();
+            });
+        }
+
+        function OpenAlertMessage(html) {
+            let msg = $('#exampleModal');
+            msg.find('.modal-body').html(html);
+            msg.modal('show');
+        }
 
         function OpenLoading() {
             $('#loadingModal').modal('show');
@@ -82,7 +109,45 @@
         function CloseLoading() {
             $('#loadingModal').modal('hide');
         }
+
+        class ShopCar {
+            shopCarSum = "#shopCarSum";
+            constructor() {
+                this.Get();
+            }
+
+            CheckShow(Num) {
+                var _this = this;
+                if (Num <= 0) {
+                    $(_this.shopCarSum).hide();
+                } else {
+                    $(_this.shopCarSum).html(Num);
+                    $(_this.shopCarSum).show();
+                }
+            }
+
+            Get() {
+                let _this = this;
+                let url = '@Url.Action("GetShopCarSum", "DataList")';
+                $.get(url, function (item) {
+                    _this.CheckShow(item);
+                });
+            }
+
+            Add(id, Num) {
+                var def = $.Deferred();
+                let _this = this;
+                let url = '@Url.Action("AddShopCar", "DataList")' + '/' + id + '?Num=' + Num;
+                $.get(url, function (item) {
+                    _this.CheckShow(item);
+                    def.resolve(item);
+                });
+                return def.promise();
+            }
+        }
     </script>
     
+    @await RenderSectionAsync("Scripts", required: false)
+    <partial name="~/Views/Shared/_AlertPartial.cshtml" />
 </body>
 </html>

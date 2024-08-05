@@ -1,4 +1,5 @@
-﻿using WebMVC2.Global;
+﻿using System.Text;
+using WebMVC2.Global;
 using WebMVC2.Interface;
 using WebMVC2.Models;
 
@@ -6,14 +7,14 @@ namespace WebMVC2.Services
 {
     public class ApiService : IApiService
     {
-        private readonly IApiServiceHttpClient _httpClient;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public ApiService(IApiServiceHttpClient httpClient)
+        public ApiService(IHttpClientFactory clientFactory)
         {
-            _httpClient = httpClient;
+            _clientFactory = clientFactory;
         }
 
-        private ResultData ProcessApiResponse(string apiResponse)
+        private ResultData ApiResponse(string apiResponse)
         {
             var result = new ResultData();
             try
@@ -41,23 +42,20 @@ namespace WebMVC2.Services
             try
             {
                 var jsonData = JsonSerializerService.Serialize(responseData);
-                HttpResponseMessage response = await _httpClient.SendPostRequest(AppSettings.ApiUrl, jsonData);
+                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await _clientFactory.CreateClient().PostAsync(AppSettings.ApiUrl, content);
 
                 if (response.IsSuccessStatusCode)
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
-                    return ProcessApiResponse(apiResponse);
+                    return ApiResponse(apiResponse);
                 }
-                else
-                {
-                    // Handle non-success status code
-                    return ProcessApiResponse("");
-                }
+
+                return ApiResponse("");
             }
             catch
             {
-                // Handle HTTP request exception
-                return ProcessApiResponse("");
+                return ApiResponse("");
             }
         }
     }

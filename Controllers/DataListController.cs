@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebMVC2.Interface;
+using WebMVC2.Models;
+using WebMVC2.ViewModels;
 
 namespace WebMVC2.Controllers
 {
-    public class DataListController : Controller
+    public class DataListController : BaseController
     {
         private readonly IProductService _productService;
 
@@ -21,17 +23,78 @@ namespace WebMVC2.Controllers
 
             var (products, pageInfo) = await _productService.GetProductsAsync(productTypeId, currentPage, itemSize);
 
-            ViewData["Products"] = products;
-            ViewData["PageNums"] = pageInfo;
-            ViewData["productTypeId"] = productTypeId.ToString();
+            DataListViewModel dataListViewData = new DataListViewModel();
+            dataListViewData.productItems = products;
+            dataListViewData.pageNum = pageInfo;
+            dataListViewData.productTypeId = productTypeId;
 
-            return View();
+            return View(dataListViewData);
+        }
+
+        [HttpGet]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddShopCar(int Id, int Num)
+        {
+            return Json(await ShopCarService.Add(Id, Num));
+        }
+
+        [HttpGet]
+        public IActionResult UpdShopCar(int Id, int Num)
+        {
+            return Json(ShopCarService.Upd(Id, Num));
+        }
+
+        [HttpGet]
+        public IActionResult GetShopCarSum()
+        {
+            return Json(ShopCarService.Get());
+        }
+
+        [HttpGet]
+        public IActionResult GetShopCar()
+        {
+            return Json(ShopCarService.GetShopCar());
+        }
+
+        [HttpGet]
+        public IActionResult DelShopCar(int Id)
+        {
+            return Json(ShopCarService.Delete(Id));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetProductItem(int Id)
+        {
+            ProductItem productItem = await _productService.GetProductItemAsync(Id);
+            return PartialView("_ProductDetail", productItem);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public IActionResult Index2()
+        {
+            return View(ShopCarService.GetShopCar());
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CheckOut()
+        {
+            await Task.Delay(1000);
+            ResultMessage resultData = await ShopCarService.ShoppingDone();
+            ErrorMessage = resultData.MsgText;
+            return RedirectToAction("Index", "DataList");
         }
 
         [Authorize(Roles = "Admin2")]
-        public IActionResult Index2()
+        public IActionResult Index3()
         {
-            return View();
+            return View(ShopCarService.GetShopCar());
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Index4(int? id)
+        {
+            return View(await ShopCarService.UserOrderDetail(id ?? 1));
         }
     }
 }

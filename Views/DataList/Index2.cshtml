@@ -1,6 +1,202 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@model ShopCar
+
+<div class="container" style="margin-bottom:60px">
+
+    @foreach (var item in Model.productItem)
+    {
+        <div id="Item_@item.Id">
+            <div class="row">
+                <div class="col-auto">
+                    <img src="https://placehold.it/150x150" alt="Product Image" class="img-fluid">
+                </div>
+                <div class="col">
+                    <div class="row row-cols-1 h-100">
+                        <div class="col">
+                            <h3>@item.Name</h3>
+                            <p>
+                                @item.Description
+                            </p>
+                        </div>
+                        <div class="col align-content-end">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <span class="me-3">@item.Price.ToString("C0")</span>
+                                <div class="input-group" style="min-width: 12rem; width: 12rem;">
+                                    <button class="btn btn-primary" onclick="shopCarDetail.Upd('@item.Id','-1')">-</button>
+                                    <input type="text" id="num_@item.Id" value="@item.Num" class="form-control input-number text-center" disabled style="width: 3rem;">
+                                    <button class="btn btn-primary me-3" onclick="shopCarDetail.Upd('@item.Id','1')">+</button>
+                                     <button class="btn btn-primary" onclick="shopCarDetail.Del('@item.Id')">刪除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+        </div>
+    }
+</div>
+
+<!-- 其他商品項目 -->
+<div class="container-fluid fixed-bottom bg-light" id="fixedBar" style="line-height:60px;">
+    <div class="container">
+        <div class="col-12 text-end fs-5">
+            <span class="me-5">商品總數:<span id="SumItem"></span></span>
+            <span class="me-5">總金額:<span id="SumPrice"></span></span>
+            <button class="btn btn-primary" onclick="shopCarDetail.CheckOutItem()">結帳</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fixed-bottom-custom{
+        bottom:0px;
+    }
+
+    .fixed-above-footer {
+        bottom: auto;
+    }
+</style>
+
+
+@section Scripts{
+
+    <script>
+        var shopCarDetail;
+        class ShopCarDetail {
+            _shopCar;
+            _ItemId = "#Item_";
+            _NumId = "#num_";
+            _SumItemId = "#SumItem";
+            _SumPriceId = "#SumPrice";
+            _shopCarObject;
+
+            constructor(shopCar) {
+                let _this = this;
+                this._shopCar = shopCar;
+                this.DefaultAction().then(function () {
+                    _this.ChangeTotal();
+                    _this.ChangeCount();
+                });
+            }
+
+            DefaultAction() {
+                let _this = this;
+                let def = $.Deferred();
+                let url = '@Url.Action("GetShopCar", "DataList")';
+                $.get(url, function (item) {
+                    _this._shopCarObject = item;
+                    def.resolve();
+                });
+                return def.promise();
+            }
+
+            CheckOutItem() {
+                let _this = this;
+                if (_this._shopCarObject.productItem.length <= 0) {
+                    OpenAlertMessage("您目前無商品需要結帳");
+                }
+
+                let htmlmsg = `
+                        商品總數:${this._shopCarObject.sum}<br/>
+                        總金額:${this.ToPriceType(this._shopCarObject.sumPrice)}<br/><br/>
+                        ps.送出後等待1秒讓動畫執行
+                        `
+
+                OpenConfirm(htmlmsg, function () {
+                    _this.SendToCheckOut();
+                }, "結帳(批次寫入)")
+            }
+
+            SendToCheckOut() {
+                let url = '@Url.Action("CheckOut", "DataList")';
+                var form = $('<form>', {
+                    'method': 'get',
+                    'action': url
+                });
+
+                $('body').append(form);
+                form.submit();
+            }
+
+            Del(Id) {
+                let _this = this;
+
+                let url = '@Url.Action("DelShopCar", "DataList")' + '/' + Id;
+                $.get(url, function (item) {
+                    _this._shopCarObject = item;
+                    _this.ChangeTotal();
+                    _this.ChangeCount();
+                    $(_this._ItemId + Id).remove();
+                    _this._shopCar.CheckShow(_this._shopCarObject.sum);
+                });
+            }
+
+            Upd(Id, Number) {
+                let _this = this;
+                let Num = $(_this._NumId + Id);
+
+                if (Num.val() == 1 && Number == -1) { 
+                    return;
+                }
+
+                let url = '@Url.Action("UpdShopCar", "DataList")' + '/' + Id + '?Num=' + Number;
+                $.get(url, function (item) {
+                    _this._shopCarObject = item;
+                    _this.ChanegNum(Id);
+                    _this.ChangeTotal();
+                    _this.ChangeCount();
+                });
+            }
+
+            ChanegNum(Id) {
+                let _this = this;
+                let result = $.grep(_this._shopCarObject.productItem, function (value) {
+                    return value.id == Id;
+                });
+                $(_this._NumId + Id).val(result[0].num);
+            }
+
+            ChangeTotal() {
+                let _this = this;
+                let val = this._shopCarObject.sumPrice;
+                val = _this.ToPriceType(val);
+                $(_this._SumPriceId).html(val);
+            }
+
+            ToPriceType(val) {
+                return 'NT'+parseInt(val).toLocaleString('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            }
+
+            ChangeCount() {
+                let _this = this;
+                let val = this._shopCarObject.sum;
+                $(_this._SumItemId).html(val);
+            }
+        }
+
+        $(document).ready(function () {
+            shopCarDetail = new ShopCarDetail(shopCar);
+            var $fixedBar = $('#fixedBar');
+            var $footer = $('footer');
+
+            function adjustFixedBar() {
+                var footerRect = $footer[0].getBoundingClientRect();
+                var fixedBarRect = $fixedBar[0].getBoundingClientRect();
+
+                if (footerRect.top < $(window).height()) {
+                    // 如果footer进入视口，则调整fixedBar的位置
+                    $fixedBar.removeClass('fixed-bottom-custom').addClass('fixed-above-footer');
+                    $fixedBar.css('top', (footerRect.top - fixedBarRect.height) + 'px');
+                } else {
+                    // 否则，将fixedBar固定在底部
+                    $fixedBar.removeClass('fixed-above-footer').addClass('fixed-bottom-custom');
+                    $fixedBar.css('top', 'auto');
+                }
+            }
+
+            $(window).on('scroll resize', adjustFixedBar);
+            adjustFixedBar(); // 初始调用设置正确的位置
+        });
+    </script>
 }
-<h3>123123123</h3>
+

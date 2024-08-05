@@ -10,12 +10,12 @@
             <h2 class="mb-4">Login</h2>
             <form method="post" asp-controller="Login" asp-action="Index" id="loginForm">
                 <div class="mb-3">
-                    <label for="userLogin.UserID" class="form-label">帳號</label>
+                    <label for="userLogin.UserID" class="form-label">帳號(123456)</label>
                     <input type="text" class="form-control" asp-for="userLogin.UserID">
                     <span asp-validation-for="userLogin.UserID" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label for="userLogin.Password" class="form-label">密碼</label>
+                    <label for="userLogin.Password" class="form-label">密碼(123456)</label>
                     <input type="password" class="form-control" asp-for="userLogin.Password">
                     <span asp-validation-for="userLogin.Password" class="text-danger"></span>
                 </div>

@@ -1,21 +1,53 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using WebMVC2.Interface;
 using WebMVC2.ViewModels;
 
 namespace WebMVC2.Controllers
 {
     public class BaseController : Controller
     {
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            base.OnActionExecuting(context);
+        private IShopCarService? _shopCarService;
+        private ILoggerService? _loggerService;
+        protected string ErrorMessage = string.Empty;
 
+        protected IShopCarService ShopCarService
+        {
+            get
+            {
+                if (_shopCarService == null)
+                {
+                    _shopCarService = HttpContext.RequestServices.GetService<IShopCarService>();
+                }
+                return _shopCarService ?? throw new ArgumentNullException(nameof(IShopCarService));
+            }
+        }
+
+        protected ILoggerService LoggerService
+        {
+            get
+            {
+                if (_loggerService == null)
+                {
+                    _loggerService = HttpContext.RequestServices.GetService<ILoggerService>();
+                }
+                return _loggerService ?? throw new ArgumentNullException(nameof(ILoggerService));
+            }
+        }
+
+        public override void OnActionExecuted(ActionExecutedContext context)
+        {
+            base.OnActionExecuted(context);
             // 设置共享数据
             if (context.Controller is Controller controller && controller.ViewData.Model is BaseViewModel baseViewModel)
             {
-                baseViewModel.SharedData1 = "Some shared data";
-                baseViewModel.SharedData2 = "Other shared data";
                 // 设置其他共享数据...
+                baseViewModel.shopCar = ShopCarService.GetShopCar();
+            }
+
+            if(!string.IsNullOrEmpty(ErrorMessage))
+            {
+                TempData["ErrorMessage"] = ErrorMessage;
             }
         }
     }

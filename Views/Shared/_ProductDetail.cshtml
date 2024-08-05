@@ -1,0 +1,50 @@
+﻿@{
+    <!-- Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">商品詳情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="https://placehold.it/150x150" alt="商品圖片" class="img-fluid">
+                        </div>
+                        <div class="col-md-8">
+                            <h4>@Model.Name</h4>
+                            <p>商品價格: $@Model.Price</p>
+                            <div class="row">
+                                <div class="col-auto">
+                                    <div class="d-flex align-content-center">
+                                        <select class="form-control w-auto me-3" id="quantitySelect">
+                                            <option>1</option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                            <option>4</option>
+                                            <option>5</option>
+                                            <option>6</option>
+                                            <option>7</option>
+                                            <option>8</option>
+                                            <option>9</option>
+                                            <option>10</option>
+                                        </select>
+                                        <button type="button" class="btn btn-primary" onclick="shopCar.Add('@Model.Id', $('#quantitySelect').val())">加入購物車</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr></hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>商品說明</p>
+                            <p>@Model.Description</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

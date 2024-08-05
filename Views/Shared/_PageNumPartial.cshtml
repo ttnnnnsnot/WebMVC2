@@ -1,6 +1,6 @@
 ﻿@model PageNum
 @{
-    @Model.UrlActionName
+
     if (@Model.TotalRecords > 0)
     {
         int startPage = Math.Max(1, @Model.CurrentPage - @Model.PageNumSize / 2);
