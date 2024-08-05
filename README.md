@@ -11,7 +11,7 @@
     2、表單驗証利用validator.unobtrusive，來達到前後端驗証
         2-1、ValidationAttribute建立擴充驗証機制來達到自訂驗証
         2-2、前端再加入$.validator.addMethod來達到即時自訂驗証
-        2-3、待加入AntiforgeryOptions「防止 ASP.NET 核心中的跨網站偽造要求 (XSRF/CSRF) 攻擊」
+        2-3、加入AntiforgeryOptions「防止 ASP.NET 核心中的跨網站偽造要求 (XSRF/CSRF) 攻擊」
     
     3、多檔案上傳利用ValidationAttribute驗証機制自訂需要限制的格式及檔案大小
         3-1、FormOptions可限制表單提交的資料大小限制及提交表單超過多少後由記憶體轉至使用暫存檔案機制
