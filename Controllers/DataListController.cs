@@ -32,7 +32,6 @@ namespace WebMVC2.Controllers
         }
 
         [HttpGet]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddShopCar(int Id, int Num)
         {
             return Json(await ShopCarService.Add(Id, Num));

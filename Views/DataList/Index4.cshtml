@@ -1,35 +1,10 @@
 ﻿@model OrderDetailViewModel
 
-@{
-    var Url0 = "#";
-    var Url1 = "#";
-    var Url2 = "#";
-}
-
 <div class="container-fluid">
     <div class="row">
-        <!-- 左側選單（大螢幕） -->
-        <div class="col-md-3 col-lg-2 d-none d-md-block sidebar h-100" id="left-menu-id">
-            <div class="list-group">
-                <a href="@Url0" data-producttypeid="0" class="list-group-item list-group-item-action" aria-current="true">
-                    全部
-                </a>
-                <a href="@Url1" data-producttypeid="1" class="list-group-item list-group-item-action">類別1</a>
-                <a href="@Url2" data-producttypeid="2" class="list-group-item list-group-item-action">類別2</a>
-            </div>
-        </div>
 
         <!-- 主要內容區 -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <!-- 下拉選單（小螢幕） -->
-            <div class="dropdown d-md-none mb-3">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"></button>
-                <ul class="dropdown-menu" id="dropdown-menu-id" aria-labelledby="dropdownMenuButton">
-                    <li><a class="dropdown-item" data-producttypeid="0" href="@Url0" aria-current="true">全部</a></li>
-                    <li><a class="dropdown-item" data-producttypeid="1" href="@Url1" aria-current="true">類別1</a></li>
-                    <li><a class="dropdown-item" data-producttypeid="2" href="@Url2" aria-current="true">類別2</a></li>
-                </ul>
-            </div>
+        <main class="col ms-sm-auto px-md-4">
 
             <!-- 商品列表 -->
             <div class="row row-cols-1">
@@ -64,17 +39,6 @@
                 </div>
             </div>
 
-            <div id="ProductDetail">
-                @*
-                    @await Html.PartialAsync("_ProductDetail", Model.productItem)
-                *@
-            </div>
-
         </main>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-    </script>
-}
