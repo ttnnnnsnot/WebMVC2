@@ -1,8 +1,18 @@
-﻿@using WebMVC2
+﻿
+@using WebMVC2
 @using WebMVC2.Global
 @using WebMVC2.Models
 @using WebMVC2.ViewModels
 @using WebMVC2.Services
+
+@*Context.Request.GetEncodedPathAndQuery取得完整url*@
+@using Microsoft.AspNetCore.Http.Extensions
+
+@*語系化*@
+@using System.Globalization
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 @*驗証機制*@
 @using Microsoft.AspNetCore.Authorization

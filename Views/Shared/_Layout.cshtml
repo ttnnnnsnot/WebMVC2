@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebMVC2</title>
+    <title>@Localizer["Text"] - WebMVC2</title>
     <link href="~/lib/bootstrap/dist/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -15,7 +16,7 @@
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="DataList" asp-action="Index">WebMVC2</a>
 
-                <span class="navbar-text ms-auto order-sm-2 d-flex justify-content-end">
+                <div class="navbar-text ms-auto order-sm-2 d-flex justify-content-end me-3 me-md-0">
 
                     <a href='@Url.Action("Index2","DataList")' class="nav-link text-dark position-relative">
                         <span class="bi bi-cart4 position-absolute start-0 translate-middle" style="font-size:24px; top:17px">
@@ -23,16 +24,32 @@
                         </span>
                     </a>
 
-                    <a class="nav-link text-dark" asp-controller="Login" asp-action="Register">Register</a>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <a class="nav-link text-dark" asp-controller="Login" asp-action="LogOut">LogOut</a>
-                    }
-                    else
-                    {
-                        <a class="nav-link text-dark" asp-controller="Login" asp-action="Index">Login</a>
-                    }
-                </span>
+                    <div class="d-none d-md-flex">
+                        <a class="nav-link text-dark" asp-controller="Login" asp-action="Register">Register</a>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a class="nav-link text-dark" asp-controller="Login" asp-action="LogOut">LogOut</a>
+                        }
+                        else
+                        {
+                            <a class="nav-link text-dark" asp-controller="Login" asp-action="Index">Login</a>
+                        }
+                    </div>
+
+                    <!-- 下拉選單（小螢幕） -->
+                    <form id="selectLanguageForm" asp-controller="Home" asp-action="SetLanguage">
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownLanguageButton" data-bs-toggle="dropdown" aria-expanded="false">@CultureInfo.CurrentUICulture.Name</button>
+
+                            <ul class="dropdown-menu" id="dropdown-Language-id" aria-labelledby="dropdownLanguageButton">
+                                <li><a class="dropdown-item" onclick="$('#culture').val($(this).text());$('#selectLanguageForm').submit();" aria-current="true">zh-TW</a></li>
+                                <li><a class="dropdown-item" onclick="$('#culture').val($(this).text());$('#selectLanguageForm').submit();" aria-current="true">en-US</a></li>
+                            </ul>
+                        </div>
+                        <input type="hidden" name="culture" id="culture" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.GetEncodedPathAndQuery()" />
+                    </form>
+                </div>
 
                 <button class="navbar-toggler order-sm-3" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -42,13 +59,26 @@
                 <div class="navbar-collapse collapse">
                     <ul class="navbar-nav nav">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index">商品列表</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index">@Localizer["Menu1"]</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index3">沒權限</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index3">@Localizer["Menu2"]</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index4">訂單資訊</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="DataList" asp-action="Index4">@Localizer["Menu3"]</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav nav d-md-none">
+                        <li><a class="nav-link text-dark" asp-controller="Login" asp-action="Register">Register</a></li>
+                        <li>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <a class="nav-link text-dark" asp-controller="Login" asp-action="LogOut">LogOut</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link text-dark" asp-controller="Login" asp-action="Index">Login</a>
+                            }
                         </li>
                     </ul>
                 </div>
@@ -73,6 +103,8 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
         var shopCar;
+        var language = "@CultureInfo.CurrentUICulture.Name";
+        console.log(language)
 
         $(document).ready(function () {
             shopCar = new ShopCar();

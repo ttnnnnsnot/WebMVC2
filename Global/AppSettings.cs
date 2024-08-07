@@ -1,4 +1,7 @@
-﻿namespace WebMVC2.Global
+﻿using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+
+namespace WebMVC2.Global
 {
     public static class AppSettings
     {
@@ -8,6 +11,12 @@
             Configuration["ApiUrl"] ?? "http://127.0.0.1:5000/execute";
 
         public static string CookieKey => Configuration["CookieKey"] ?? @"D:\Web\WebKey";
+
+        public static List<CultureInfo> CultureInfos = new List<CultureInfo>()
+        {
+            new CultureInfo("zh-TW"),
+            new CultureInfo("en-US")
+        };
         /*
         public static string AllowedHosts =>
             Configuration["AllowedHosts"] ?? "*";

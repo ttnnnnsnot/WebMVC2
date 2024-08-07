@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Serilog;
 using WebMVC2.Global;
 using WebMVC2.Interface;
@@ -11,6 +13,26 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 設定 Configuration
 AppSettings.Configuration = builder.Configuration;
+
+// 設定當地語系化
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+builder.Services.AddControllersWithViews()
+        .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+        .AddDataAnnotationsLocalization();
+
+RequestLocalizationOptions myOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("zh-TW"),
+    SupportedCultures = AppSettings.CultureInfos,
+    SupportedUICultures = AppSettings.CultureInfos
+};
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options = myOptions;
+    options.RequestCultureProviders.Insert(0, new QueryStringRequestCultureProvider());
+});
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -98,6 +120,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// 設定當地語系化
+app.UseRequestLocalization(myOptions);
 
 // 設置session
 app.UseSession();
