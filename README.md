@@ -26,6 +26,8 @@
         6-3、結帳時利用資料庫的「使用者資料定義型別」來達到stored procedure可進行批次寫入的方式
         6-4、建立使用者查詢訂單頁面，利用bootstrap的Accordion方式來顯示
     
+    7、利用AddLocalization建立當地化語系，只簡單的建立Menu語系文字
+
     版面設置使用bootstrap來建置
 
 
